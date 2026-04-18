@@ -1,3 +1,4 @@
+const os = require("os");
 const fs = require("fs");
 
 // Create file Sync
@@ -41,3 +42,6 @@ fs.mkdirSync("proj");
 
 // Create a directory inside another directory
 fs.mkdirSync("proj/a", { recursive: true });
+
+// To know how many cores we have in CPU
+console.log(os.cpus().length);
