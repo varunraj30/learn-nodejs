@@ -9,7 +9,9 @@ const app = express();
 
 const PORT = 8000;
 
-connectToDb(process.env.MONGO_URL).then(() => console.log(`DB Connected`));
+connectToDb(process.env.MONGO_URL)
+  .then(() => console.log(`DB Connected`))
+  .catch((err) => console.log(`ERROR ${err}`));
 
 app.set("view engine", "ejs");
 app.set("views", path.resolve("./views"));
@@ -20,7 +22,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use("/", staticRouter);
 app.use("/url", URLRoute);
 
-app.get("/test/analytics", async (req, res) => {
+app.get("/", async (req, res) => {
   const allURLs = await URL.find({});
   return res.render("home", { urls: allURLs });
 });
