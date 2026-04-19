@@ -2,8 +2,11 @@ const express = require("express");
 const path = require("path");
 const URLRoute = require("./routes/url");
 const staticRouter = require("./routes/staticRouter");
+const userRouter = require("./routes/user");
 const { connectToDb } = require("./db");
 const URL = require("./models/url");
+const cookieParser = require("cookie-parser");
+const { restrictToLoggedInUsersOnly, checkAuth } = require("./middleware/auth");
 
 const app = express();
 
@@ -18,14 +21,11 @@ app.set("views", path.resolve("./views"));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+app.use(cookieParser());
 
-app.use("/", staticRouter);
+app.use("/", restrictToLoggedInUsersOnly, staticRouter);
 app.use("/url", URLRoute);
-
-app.get("/", async (req, res) => {
-  const allURLs = await URL.find({});
-  return res.render("home", { urls: allURLs });
-});
+app.use("/user", checkAuth, userRouter);
 
 app.get("/:shortId", async (req, res) => {
   const shortId = req.params.shortId;
