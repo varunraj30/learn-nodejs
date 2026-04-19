@@ -1,16 +1,29 @@
 const express = require("express");
-
-const app = express();
-const PORT = 8000;
-
+const path = require("path");
 const URLRoute = require("./routes/url");
+const staticRouter = require("./routes/staticRouter");
 const { connectToDb } = require("./db");
 const URL = require("./models/url");
 
+const app = express();
+
+const PORT = 8000;
+
 connectToDb(process.env.MONGO_URL).then(() => console.log(`DB Connected`));
 
+app.set("view engine", "ejs");
+app.set("views", path.resolve("./views"));
+
 app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+
+app.use("/", staticRouter);
 app.use("/url", URLRoute);
+
+app.get("/test/analytics", async (req, res) => {
+  const allURLs = await URL.find({});
+  return res.render("home", { urls: allURLs });
+});
 
 app.get("/:shortId", async (req, res) => {
   const shortId = req.params.shortId;
