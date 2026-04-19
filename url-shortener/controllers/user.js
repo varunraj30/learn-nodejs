@@ -9,7 +9,7 @@ async function handleUserSignup(req, res) {
   await User.create({ name, email, password });
   return res.render("/");
 }
-
+/* For Stateful
 async function handleUserLogin(req, res) {
   const { email, password } = req.body;
   const user = await User.findOne({ email, password });
@@ -18,6 +18,20 @@ async function handleUserLogin(req, res) {
   const sessionId = uuidv4();
   setUser(sessionId, user);
   res.cookie("uuid", sessionId);
+
+  return res.redirect("/");
+}
+*/
+
+// For Stateless
+async function handleUserLogin(req, res) {
+  const { email, password } = req.body;
+  const user = await User.findOne({ email, password });
+  if (!user)
+    return res.render("login", { error: "Invalid username or password" });
+
+  const token = setUser(user);
+  res.cookie("uuid", token);
 
   return res.redirect("/");
 }
