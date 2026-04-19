@@ -6,7 +6,7 @@ const userRouter = require("./routes/user");
 const { connectToDb } = require("./db");
 const URL = require("./models/url");
 const cookieParser = require("cookie-parser");
-const { restrictToLoggedInUsersOnly, checkAuth } = require("./middleware/auth");
+const { checkForAuthentication, restrictTo } = require("./middleware/auth");
 
 const app = express();
 
@@ -22,10 +22,11 @@ app.set("views", path.resolve("./views"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+app.use(checkForAuthentication());
 
-app.use("/", restrictToLoggedInUsersOnly, staticRouter);
+app.use("/", restrictTo(["NORMAL", "ADMIN"]), staticRouter);
 app.use("/url", URLRoute);
-app.use("/user", checkAuth, userRouter);
+app.use("/user", userRouter);
 
 app.get("/:shortId", async (req, res) => {
   const shortId = req.params.shortId;
