@@ -31,7 +31,14 @@ async function handleUserLogin(req, res) {
     return res.render("login", { error: "Invalid username or password" });
 
   const token = setUser(user);
-  res.cookie("uuid", token);
+  res.cookie(
+    "uuid",
+    token,
+    // { domain: "domain" }
+    // expires - Date
+    // httpOnly - Boolean
+    // https://expressjs.com/en/api.html
+  );
 
   return res.redirect("/");
 }
